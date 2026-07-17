@@ -87,7 +87,7 @@ class TestFaraQwen3AgentConfig:
 
 
 # ===========================================================================
-# _make_model_call wiring (stop token + chat_template_kwargs injection)
+# _make_model_call wiring (chat_template_kwargs injection)
 # ===========================================================================
 
 
@@ -121,11 +121,11 @@ def _agent_with_mock_create() -> tuple[FaraQwen3Agent, AsyncMock]:
 
 class TestMakeModelCall:
     @pytest.mark.asyncio
-    async def test_injects_stop_and_enable_thinking_by_default(self):
+    async def test_omits_stop_and_injects_enable_thinking_by_default(self):
         agent, create = _agent_with_mock_create()
         await agent._make_model_call([])
         kwargs = create.call_args.kwargs
-        assert kwargs["stop"] == ["</tool_call>"]
+        assert "stop" not in kwargs
         assert kwargs["extra_body"]["chat_template_kwargs"] == {
             "enable_thinking": False
         }
